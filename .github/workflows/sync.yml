@@ -38,4 +38,4 @@ jobs:
         env:
           AUTH: ${{ secrets.AUTH }}
         if: github.event_name == 'push'
-        run: echo '$AUTH' > auth.json && ./image-syncer --auth=./auth.json --images=./sync/images.json
+        run: echo "$AUTH" > auth.json && ./image-syncer --auth=./auth.json --images=./sync/images.json
