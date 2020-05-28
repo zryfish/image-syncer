@@ -29,26 +29,40 @@ type Auth struct {
 }
 
 // NewSyncConfig creates a Config struct
-func NewSyncConfig(configFilePath, defaultDestRegistry, defaultDestNamespace string) (*Config, error) {
-	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("config file %v not exist: %v", configFilePath, err)
-	}
-
-	file, err := os.OpenFile(configFilePath, os.O_RDONLY, 0666)
-	if err != nil {
-		return nil, fmt.Errorf("open config file %v error: %v", configFilePath, err)
-	}
-
-	decoder := json.NewDecoder(file)
+func NewSyncConfig(authFilePath, imageFilePath, defaultDestRegistry, defaultDestNamespace string) (*Config, error) {
 	config := Config{
 		defaultDestNamespace: defaultDestNamespace,
 		defaultDestRegistry:  defaultDestRegistry,
 	}
 
-	if err := decoder.Decode(&config); err != nil {
-		return nil, fmt.Errorf("unmarshal config error: %v", err)
+	if err := openAndDecode(authFilePath, &config.AuthList); err != nil {
+		return nil, fmt.Errorf("decode auth file %v error: %v", authFilePath, err)
 	}
+
+	if err := openAndDecode(imageFilePath, &config.ImageList); err != nil {
+		return nil, fmt.Errorf("decode image file %v error: %v", imageFilePath, err)
+	}
+
 	return &config, nil
+}
+
+// Open json file and decode into target interface
+func openAndDecode(filePath string, target interface{}) error {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return fmt.Errorf("file %v not exist: %v", filePath, err)
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
+	if err != nil {
+		return fmt.Errorf("open file %v error: %v", filePath, err)
+	}
+
+	decoder := json.NewDecoder(file)
+
+	if err := decoder.Decode(target); err != nil {
+		return fmt.Errorf("unmarshal config error: %v", err)
+	}
+	return nil
 }
 
 // GetAuth gets the authentication information in Config
