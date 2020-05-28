@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	logPath, configFile, defaultRegistry, defaultNamespace string
+	logPath, configFile, authFile, imageFile, defaultRegistry, defaultNamespace string
 
 	procNum, retries int
 )
@@ -24,7 +24,7 @@ var RootCmd = &cobra.Command{
 	Complete documentation is available at https://github.com/AliyunContainerService/image-syncer`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// work starts here
-		client, err := client.NewSyncClient(configFile, logPath, procNum, retries, defaultRegistry, defaultNamespace)
+		client, err := client.NewSyncClient(configFile, authFile, imageFile, logPath, procNum, retries, defaultRegistry, defaultNamespace)
 		if err != nil {
 			return fmt.Errorf("init sync client error: %v", err)
 		}
@@ -35,15 +35,19 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	var defaultLogPath, defaultConfigFile string
+	var defaultLogPath, defaultConfigFile, defaultAuthFile, defaultImageFile string
 
 	pwd, err := os.Getwd()
 	if err == nil {
 		defaultLogPath = ""
-		defaultConfigFile = pwd + "/" + "image-syncer.json"
+		defaultConfigFile = pwd + "/" + "config.json"
+		defaultAuthFile = pwd + "/" + "auth.json"
+		defaultImageFile = pwd + "/" + "images.json"
 	}
 
-	RootCmd.PersistentFlags().StringVar(&configFile, "config", defaultConfigFile, "config file path")
+	RootCmd.PersistentFlags().StringVar(&configFile, "config", defaultConfigFile, "config file path. This flag is deprecated and will be removed in the future. Please use --auth and --images instead.")
+	RootCmd.PersistentFlags().StringVar(&authFile, "auth", defaultAuthFile, "auth file path. This flag need to be pair used with --images.")
+	RootCmd.PersistentFlags().StringVar(&imageFile, "images", defaultImageFile, "images file path. This flag need to be pair used with --auth")
 	RootCmd.PersistentFlags().StringVar(&logPath, "log", defaultLogPath, "log file path (default in os.Stderr)")
 	RootCmd.PersistentFlags().StringVar(&defaultRegistry, "registry", os.Getenv("DEFAULT_REGISTRY"),
 		"default destinate registry url when destinate registry is not given in the config file, can also be set with DEFAULT_REGISTRY environment value")
