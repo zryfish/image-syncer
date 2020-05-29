@@ -2,13 +2,13 @@
 # For example:
 #
 #    // This rule means sync all images in left repo to right repo
-#    "quay.io/kubernetes-multicluster/kubefed": "kubespheredev/kubesphere"  
+#    "quay.io/kubernetes-multicluster/kubefed": "kubespheredev/kubefed"  
 #
 #    // Only sync image tagged v0.3.0 to right repo
-#    "quay.io/kubernetes-multicluster/kubefed:v0.3.0": "kubespheredev/kubesphere"  
+#    "quay.io/kubernetes-multicluster/kubefed:v0.3.0": "kubespheredev/kubefed"  
 #
 #    // Sync multiple images to right repo
-#    "quay.io/kubernetes-multicluster/kubefed:v0.3.0,v0.4.0,v0.5.0": "kubespheredev/kubesphere"  
+#    "quay.io/kubernetes-multicluster/kubefed:v0.3.0,v0.4.0,v0.5.0": "kubespheredev/kubefed"  
 #
 # If images are not public, please contact @zryfish to add registry credentials.
 #
@@ -16,7 +16,7 @@
 # Testing
 # For testing purpose
 #
-"quay.io/kubernetes-multicluster/kubefed:v0.3.0": "kubespheredev/kubesphere"
+"quay.io/kubernetes-multicluster/kubefed:v0.3.0": "kubespheredev/kubefed"
 
 # Development
 # This section are rules used to sync images that are still under development
