@@ -3,16 +3,18 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"os"
+	"strings"
 )
 
 // Config information of sync client
 type Config struct {
 	// the authentication information of each registry
-	AuthList map[string]Auth `json:"auth"`
+	AuthList map[string]Auth `json:"auth" yaml:"auth"`
 
 	// a <source_repo>:<dest_repo> map
-	ImageList map[string]string `json:"images"`
+	ImageList map[string]string `json:"images" yaml:"images"`
 
 	// If the destinate registry and namespace is not provided,
 	// the source image will be synchronized to defaultDestRegistry
@@ -23,9 +25,9 @@ type Config struct {
 
 // Auth describes the authentication information of a registry
 type Auth struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Insecure bool   `json:"insecure"`
+	Username string `json:"username" yaml:"username"`
+	Password string `json:"password" yaml:"password"`
+	Insecure bool   `json:"insecure" yaml:"insecure"`
 }
 
 // NewSyncConfig creates a Config struct
@@ -57,11 +59,20 @@ func openAndDecode(filePath string, target interface{}) error {
 		return fmt.Errorf("open file %v error: %v", filePath, err)
 	}
 
-	decoder := json.NewDecoder(file)
-
-	if err := decoder.Decode(target); err != nil {
-		return fmt.Errorf("unmarshal config error: %v", err)
+	if strings.HasSuffix(filePath, ".yaml") || strings.HasSuffix(filePath, ".yml") {
+		decoder := yaml.NewDecoder(file)
+		if err := decoder.Decode(target); err != nil {
+			return fmt.Errorf("unmarshal config error: %v", err)
+		}
+	} else if strings.HasSuffix(filePath, ".json") {
+		decoder := json.NewDecoder(file)
+		if err := decoder.Decode(target); err != nil {
+			return fmt.Errorf("unmarshal config error: %v", err)
+		}
+	} else {
+		return fmt.Errorf("only one of yaml/yml/json format is supported")
 	}
+
 	return nil
 }
 
